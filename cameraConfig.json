@@ -1,0 +1,13 @@
+{
+    "tolerance": 10,
+    "range": {
+        "x": {
+            "start": -5,
+            "end": 5
+        },
+        "y": {
+            "start": 0,
+            "end": 100
+        }
+    }
+}
