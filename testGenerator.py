@@ -53,7 +53,55 @@ def generateCameraData():
     return cameraData
 
 
-def writeDictArrayToCsv(dictArray=[], filename="data.csv"):
+def generateShortRangeRadarData():
+    global shortRangeRadarConfig
+    shortRangeRadarDataSpec = {
+        "objId": 0,
+        "x": None,
+        "y": None
+    }
+    shortRangeRadarData = []
+    for index in range(100):
+        shortRangeRadarData.append(shortRangeRadarDataSpec.copy())
+        objId = index
+        x = uniform(shortRangeRadarConfig["range"]["x"]["start"], shortRangeRadarConfig["range"]["x"]["end"]) + \
+            uniform(-shortRangeRadarConfig["tolerance"],
+                    shortRangeRadarConfig["tolerance"])
+        y = uniform(shortRangeRadarConfig["range"]["y"]["start"], shortRangeRadarConfig["range"]["y"]["end"]) + \
+            uniform(-shortRangeRadarConfig["tolerance"],
+                    shortRangeRadarConfig["tolerance"])
+
+        shortRangeRadarData[index]["objId"] = objId
+        shortRangeRadarData[index]["x"] = x
+        shortRangeRadarData[index]["y"] = y
+    return shortRangeRadarData
+
+
+def generateLongRangeRadarData():
+    global longRangeRadarConfig
+    longRangeRadarDataSpec = {
+        "objId": 0,
+        "x": None,
+        "y": None
+    }
+    longRangeRadarData = []
+    for index in range(100):
+        longRangeRadarData.append(longRangeRadarDataSpec.copy())
+        objId = index
+        x = uniform(longRangeRadarConfig["range"]["x"]["start"], longRangeRadarConfig["range"]["x"]["end"]) + \
+            uniform(-longRangeRadarConfig["tolerance"],
+                    longRangeRadarConfig["tolerance"])
+        y = uniform(longRangeRadarConfig["range"]["y"]["start"], longRangeRadarConfig["range"]["y"]["end"]) + \
+            uniform(-longRangeRadarConfig["tolerance"],
+                    longRangeRadarConfig["tolerance"])
+
+        longRangeRadarData[index]["objId"] = objId
+        longRangeRadarData[index]["x"] = x
+        longRangeRadarData[index]["y"] = y
+    return longRangeRadarData
+
+
+def writeDictArrayToCSV(dictArray=[], filename="data.csv"):
     keys = dictArray[0].keys()
     with open(filename, "w") as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
