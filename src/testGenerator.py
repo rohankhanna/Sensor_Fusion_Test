@@ -6,29 +6,21 @@ import csv
 
 
 def readCameraConfig():
-    cameraConfig = []
-    with open('cameraConfig.json') as json_data:
+    with open('../config/cameraConfig.json') as json_data:
         cameraConfig = json.load(json_data)
         return cameraConfig
 
 
 def readShortRangeRadarConfig():
-    shortRangeRadarConfig = []
-    with open('shortRangeRadarConfig.json') as json_data:
+    with open('../config/shortRangeRadarConfig.json') as json_data:
         shortRangeRadarConfig = json.load(json_data)
         return shortRangeRadarConfig
 
 
 def readLongRangeRadarConfig():
-    longRangeRadarConfig = []
-    with open('longRangeRadarConfig.json') as json_data:
+    with open('../config/longRangeRadarConfig.json') as json_data:
         longRangeRadarConfig = json.load(json_data)
         return longRangeRadarConfig
-
-
-cameraConfig = readCameraConfig()
-shortRangeRadarConfig = readShortRangeRadarConfig()
-longRangeRadarConfig = readLongRangeRadarConfig()
 
 
 def appendRandomNoiseCameraData(cameraData, timestamp):
@@ -39,8 +31,10 @@ def appendRandomNoiseCameraData(cameraData, timestamp):
         "y": None,
         "timestamp": 0
     }
-    objId = len(cameraData)-1
-    for index in range(100):
+    objId = len(cameraData) - 1
+    randomRange = randint(0, 100)
+    print(randomRange)
+    for index in range(randomRange):
         cameraData.append(cameraDataSpec.copy())
         objId = objId+1
         x = uniform(cameraConfig["range"]["x"]["start"], cameraConfig["range"]["x"]["end"]) + \
@@ -65,8 +59,9 @@ def appendRandomNoiseShortRangeRadarData(shortRangeRadarData, timestamp):
         "y": None,
         "timestamp": 0
     }
-    objId = len(shortRangeRadarData)
-    for index in range(100):
+    objId = len(shortRangeRadarData) - 1
+    randomRange = randint(0, 100)
+    for index in range(randomRange):
         shortRangeRadarData.append(shortRangeRadarDataSpec.copy())
         objId = objId+1
         x = uniform(shortRangeRadarConfig["range"]["x"]["start"], shortRangeRadarConfig["range"]["x"]["end"]) + \
@@ -80,8 +75,6 @@ def appendRandomNoiseShortRangeRadarData(shortRangeRadarData, timestamp):
         shortRangeRadarData[-1]["x"] = x
         shortRangeRadarData[-1]["y"] = y
         shortRangeRadarData[-1]["timestamp"] = timestamp
-    # print(shortRangeRadarData[-1])
-    # print(shortRangeRadarConfig)
     return shortRangeRadarData
 
 
@@ -93,8 +86,9 @@ def appendRandomNoiseLongRangeRadarData(longRangeRadarData, timestamp):
         "y": None,
         "timestamp": 0
     }
-    objId = len(longRangeRadarData)
-    for index in range(100):
+    objId = len(longRangeRadarData) - 1
+    randomRange = randint(0, 100)
+    for index in range(randomRange):
         longRangeRadarData.append(longRangeRadarDataSpec.copy())
         objId = objId+1
         x = uniform(longRangeRadarConfig["range"]["x"]["start"], longRangeRadarConfig["range"]["x"]["end"]) + \
@@ -108,12 +102,10 @@ def appendRandomNoiseLongRangeRadarData(longRangeRadarData, timestamp):
         longRangeRadarData[-1]["x"] = x
         longRangeRadarData[-1]["y"] = y
         longRangeRadarData[-1]["timestamp"] = timestamp
-    # print(longRangeRadarData[-1])
-    # print(longRangeRadarConfig)
     return longRangeRadarData
 
 
-def writeDictArrayToCSV(dictArray=[], filename="data.csv"):
+def writeDictArrayToCSV(dictArray=[], filename="../dist/data.csv"):
     keys = dictArray[0].keys()
     with open(filename, "w") as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
@@ -123,33 +115,57 @@ def writeDictArrayToCSV(dictArray=[], filename="data.csv"):
 
 def writeCameraData(cameraData):
     writeDictArrayToCSV(dictArray=cameraData,
-                        filename="cameraData.csv")
+                        filename="../dist/cameraData.csv")
 
 
 def writeShortRangeRadarData(shortRangeRadarData):
     writeDictArrayToCSV(dictArray=shortRangeRadarData,
-                        filename="shortRangeRadarData.csv")
+                        filename="../dist/shortRangeRadarData.csv")
 
 
 def writeLongRangeRadarData(longRangeRadarData):
     writeDictArrayToCSV(dictArray=longRangeRadarData,
-                        filename="longRangeRadarData.csv")
+                        filename="../dist/longRangeRadarData.csv")
 
 
-timestamp = 0
-cameraData = []
-shortRangeRadarData = []
-longRangeRadarData = []
+def generateRandomGroundTruthData(epochs=200):
+    pass
 
-for _ in range(200):
-    timestamp = timestamp+2
-    cameraData = appendRandomNoiseCameraData(
-        cameraData=cameraData, timestamp=timestamp)
-    shortRangeRadarData = appendRandomNoiseShortRangeRadarData(
-        shortRangeRadarData=shortRangeRadarData, timestamp=timestamp)
-    longRangeRadarData = appendRandomNoiseLongRangeRadarData(
-        longRangeRadarData=longRangeRadarData, timestamp=timestamp)
 
-writeCameraData(cameraData=cameraData)
-writeShortRangeRadarData(shortRangeRadarData=shortRangeRadarData)
-writeLongRangeRadarData(longRangeRadarData=longRangeRadarData)
+def addGlobalNoise(epochs=200):
+    timestamp = 0
+    cameraData = []
+    shortRangeRadarData = []
+    longRangeRadarData = []
+
+    for _ in range(200):
+        timestamp = timestamp+2
+        cameraData = appendRandomNoiseCameraData(
+            cameraData=cameraData, timestamp=timestamp)
+        shortRangeRadarData = appendRandomNoiseShortRangeRadarData(
+            shortRangeRadarData=shortRangeRadarData, timestamp=timestamp)
+        longRangeRadarData = appendRandomNoiseLongRangeRadarData(
+            longRangeRadarData=longRangeRadarData, timestamp=timestamp)
+
+    writeCameraData(cameraData=cameraData)
+    writeShortRangeRadarData(shortRangeRadarData=shortRangeRadarData)
+    writeLongRangeRadarData(longRangeRadarData=longRangeRadarData)
+
+
+cameraConfig = []
+shortRangeRadarConfig = []
+longRangeRadarConfig = []
+
+
+def main():
+    global cameraConfig
+    global shortRangeRadarConfig
+    global longRangeRadarConfig
+
+    cameraConfig = readCameraConfig()
+    shortRangeRadarConfig = readShortRangeRadarConfig()
+    longRangeRadarConfig = readLongRangeRadarConfig()
+    addGlobalNoise(epochs=200)
+
+
+main()
