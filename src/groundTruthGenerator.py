@@ -49,16 +49,23 @@ def findMinMaxRanges(sensorConfigs):
     return [maxXvalue, minXvalue, maxYvalue, minYvalue]
 
 
-def atLeastTwoSensorsCanSeeThisPoint(sensorConfigs, xy):
+def inRangeOfSensor(config, x, y):
+    if x <= config["range"]["x"]["end"] and \
+            x >= config["range"]["x"]["start"] and \
+            y <= config["range"]["y"]["end"] and \
+            y >= config["range"]["y"]["start"]:
+        return True
+    return False
+
+
+def pointVisibleToCameraAndAnotherSensor(sensorConfigs, xy):
+    [cameraConfig, shortRangeRadarConfig, longRangeRadarConfig] = sensorConfigs
     [x, y] = xy
-    count = 0
-    for config in sensorConfigs:
-        if x <= config["range"]["x"]["end"] and \
-           x >= config["range"]["x"]["start"] and \
-           y <= config["range"]["y"]["end"] and \
-           y >= config["range"]["y"]["start"]:
-            count = count+1
-    return count > 1
+
+    if inRangeOfSensor(config=cameraConfig, x=x, y=y):
+        if inRangeOfSensor(config=shortRangeRadarConfig, x=x, y=y) or inRangeOfSensor(config=longRangeRadarConfig, x=x, y=y):
+            return True
+    return False
 
 
 def generateValidGroundTruthDataPoint(objId, sensorConfigs, minMaxRangeValues):
@@ -72,7 +79,7 @@ def generateValidGroundTruthDataPoint(objId, sensorConfigs, minMaxRangeValues):
     while True:
         x = uniform(minXvalue, maxXvalue)
         y = uniform(minYvalue, maxYvalue)
-        if atLeastTwoSensorsCanSeeThisPoint(sensorConfigs=sensorConfigs, xy=[x, y]):
+        if pointVisibleToCameraAndAnotherSensor(sensorConfigs=sensorConfigs, xy=[x, y]):
             sensorDataSpec["objId"] = objId
             sensorDataSpec["x"] = x
             sensorDataSpec["y"] = y
@@ -94,8 +101,6 @@ def generateGroundTruthData(sensorConfigs, minMaxRangeValues):
 
 
 def writeCSVtoFile(dictArray=[], filename="../dist/expectedOutputData.csv"):
-    # print("asdfasdf", len(dictArray))
-    # quit()
     keys = dictArray[0].keys()
     with open(filename, "w") as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
