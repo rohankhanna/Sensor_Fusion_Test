@@ -23,27 +23,41 @@ def readLongRangeRadarConfig():
         return longRangeRadarConfig
 
 
+def inRange(item, config):
+    return (
+        (item["x"] < config["range"]["x"]["end"]) and
+        (item["x"] > config["range"]["x"]["start"]) and
+        (item["y"] < config["range"]["y"]["end"]) and
+        (item["y"] > config["range"]["y"]["start"]))
+
+
 def visibleTo(listOfDicts, config):
-    index = 0
-    for item in listOfDicts:
-        if not (
-            item["x"] <= config["range"]["x"]["end"] and
-            item["x"] >= config["range"]["x"]["start"] and
-            item["y"] <= config["range"]["y"]["end"] and
-            item["y"] >= config["range"]["y"]["start"]
-        ):
-            del listOfDicts[index]
-        else:
-            index = index+1
-    return listOfDicts
+    # index = 0
+    copyOfListOfDicts = listOfDicts.copy()
+    # for item in copyOfListOfDicts:
+    #     if not (
+    #         item["x"] <= config["range"]["x"]["end"] and
+    #         item["x"] >= config["range"]["x"]["start"] and
+    #         item["y"] <= config["range"]["y"]["end"] and
+    #         item["y"] >= config["range"]["y"]["start"]
+    #     ):
+    #         del copyOfListOfDicts[index]
+    #     else:
+    #         index = index+1
+    returnable = [item for item in copyOfListOfDicts if inRange(
+        item=item, config=config)]
+    return returnable
 
 
 def writeDictArraytoCSVFile(dictArray=[], filename="../dist/expectedOutputData.csv"):
-    keys = dictArray[0].keys()
-    with open(filename, "w") as output_file:
-        dict_writer = csv.DictWriter(output_file, keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(dictArray)
+    if(len(dictArray) == 0):
+        print("EMPTY ARRAY!!")
+    else:
+        keys = dictArray[0].keys()
+        with open(filename, "w") as output_file:
+            dict_writer = csv.DictWriter(output_file, keys)
+            dict_writer.writeheader()
+            dict_writer.writerows(dictArray)
 
 
 def writeCameraData(cameraData):
@@ -72,16 +86,16 @@ def readGroundTruthDataCSV(fileName="../dist/expectedOutputData.csv"):
 def getGroundTruthDataAtTimestamp(groundTruthData, timestamp):
     returnable = []
     for item in groundTruthData:
-        if item.timestamp == timestamp:
+        if item["timestamp"] == timestamp:
             returnable.append(item)
     return returnable
 
 
 def inRangeOfSensor(sensorConfig, x, y):
-    if x <= sensorConfig["range"]["x"]["end"] and \
-            x >= sensorConfig["range"]["x"]["start"] and \
-            y <= sensorConfig["range"]["y"]["end"] and \
-            y >= sensorConfig["range"]["y"]["start"]:
+    if x < sensorConfig["range"]["x"]["end"] and \
+       x > sensorConfig["range"]["x"]["start"] and \
+       y < sensorConfig["range"]["y"]["end"] and \
+       y > sensorConfig["range"]["y"]["start"]:
         return True
     return False
 
@@ -92,12 +106,14 @@ def noised(point, threshold, sensorConfig):
     while True:
         dx = uniform(-threshold/2, threshold/2)
         dy = uniform(-threshold/2, threshold/2)
-        if (((dx*dx) + (dy*dy)) <= ((threshold/2)*(threshold/2)) and
-                inRangeOfSensor(
+        if ((((dx*dx) + (dy*dy)) <= ((threshold/2)*(threshold/2))) and
+            inRangeOfSensor(
                 x=point["x"] + dx,
                 y=point["y"] + dy,
                 sensorConfig=sensorConfig)):
             break
+        # else:
+        #     print(sensorConfig, point["x"] + dx, point["y"] + dy)
     point["x"] = point["x"] + dx
     point["y"] = point["y"] + dy
     return point
@@ -105,12 +121,15 @@ def noised(point, threshold, sensorConfig):
 
 def individualPointsNoised(groundTruthData, threshold, sensorConfig):
     returnable = []
-    for point in groundTruthData:
+    GTCopy = groundTruthData.copy()
+    print("individualPointsNoised GTCopy", len(GTCopy))
+    for point in tqdm(GTCopy):
         returnable.append(
             noised(
                 point=point,
                 threshold=threshold,
                 sensorConfig=sensorConfig))
+    print("individualPointsNoised", len(returnable))
     return returnable
 
 
@@ -118,29 +137,32 @@ def main():
     cameraConfig = readCameraConfig()
     shortRangeRadarConfig = readShortRangeRadarConfig()
     longRangeRadarConfig = readLongRangeRadarConfig()
-    threshold = 0.1
+    threshold = 2
     groundTruthData = readGroundTruthDataCSV(
         fileName="../dist/expectedOutputData.csv")
     expectedInputDataCamera = []
-
     expectedInputDataShortRangeRadar = []
     expectedInputDataLongRangeRadar = []
-    for timestamp in range(0, 4, 2):
+    for timestamp in range(0, int(groundTruthData[-1]["timestamp"]), 2):
+        # """int(groundTruthData[-1]["timestamp"])"""
         tempGroundTruthStore = getGroundTruthDataAtTimestamp(
             groundTruthData=groundTruthData, timestamp=timestamp)
         # add noise to individual Point readings
+        print("1", len(tempGroundTruthStore))
         expectedInputDataCamera.extend(
             individualPointsNoised(sensorConfig=cameraConfig,
                                    groundTruthData=visibleTo(
                                        listOfDicts=tempGroundTruthStore,
                                        config=cameraConfig),
                                    threshold=threshold))
+        print("2", len(tempGroundTruthStore))
         expectedInputDataShortRangeRadar.extend(
             individualPointsNoised(sensorConfig=shortRangeRadarConfig,
                                    groundTruthData=visibleTo(
                                        listOfDicts=tempGroundTruthStore,
                                        config=shortRangeRadarConfig),
                                    threshold=threshold))
+        print("3", len(tempGroundTruthStore))
         expectedInputDataLongRangeRadar.extend(
             individualPointsNoised(sensorConfig=longRangeRadarConfig,
                                    groundTruthData=visibleTo(
@@ -148,37 +170,15 @@ def main():
                                        config=longRangeRadarConfig),
                                    threshold=threshold))
         # add noise to sensor ranges that have no areas in common
-        expectedInputDataCamera.extend()
-        expectedInputDataShortRangeRadar.extend()
-        expectedInputDataLongRangeRadar.extend()
+        # expectedInputDataCamera.extend()
+        # expectedInputDataShortRangeRadar.extend()
+        # expectedInputDataLongRangeRadar.extend()
 
-        # tempNoiseStore=generateRandomNoiseData(
-        #     sensorConfigs=[cameraConfig,
-        #                    shortRangeRadarConfig,
-        #                    longRangeRadarConfig]
-        #     minMaxRangeValues=minMaxRangeValues)
-        # expectedInputDataCamera=mergeData(timestamp=timestamp,
-        #                                     sensorData=noised(
-        #                                         JSONdata=visibleTo(JSONdata=expectedInputDataCamera, config=cameraConfig), config=cameraConfig),
-        #                                     toMergeWith=tempNoiseStore)
-        # expectedInputDataShortRangeRadar=mergeData(timestamp=timestamp,
-        #                                              sensorData=noised(
-        #                                                  JSONdata=visibleTo(JSONdata=expectedInputDataShortRangeRadar, config=shortRangeRadarConfig), config=shortRangeRadarConfig),
-        #                                              toMergeWith=tempNoiseStore)
-        # expectedInputDataLongRangeRadar=mergeData(timestamp=timestamp,
-        #                                             sensorData=noised(
-        #                                                 JSONdata=visibleTo(JSONdata=expectedInputDataLongRangeRadar, config=longRangeRadarConfig), config=cameraConfig),
-        #                                             toMergeWith=tempNoiseStore)
-        # writeExpectedOutputData(expectedOutputData=groundTruthData)
-        # writeCameraData(
-        #     cameraData=expectedInputDataCamera)
-        # writeShortRangeRadarData(
-        #     shortRangeRadarData=expectedInputDataShortRangeRadar)
-        # writeLongRangeRadarData(
-        #     longRangeRadarData=expectedInputDataLongRangeRadar)
     writeCameraData(expectedInputDataCamera)
     writeShortRangeRadarData(expectedInputDataShortRangeRadar)
     writeLongRangeRadarData(expectedInputDataLongRangeRadar)
 
 
+print("------")
 main()
+print("------")

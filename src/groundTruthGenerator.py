@@ -45,7 +45,6 @@ def findMinMaxRanges(sensorConfigs):
             minYvalue = config["range"]["y"]["start"]
         if config["range"]["y"]["end"] < minYvalue:
             minYvalue = config["range"]["y"]["end"]
-    # print("actual", [maxXvalue, minXvalue, maxYvalue, minYvalue])
     return [maxXvalue, minXvalue, maxYvalue, minYvalue]
 
 
@@ -66,7 +65,6 @@ def pointVisibleToCameraAndAnotherSensor(sensorConfigs, xy):
         if inRangeOfSensor(config=shortRangeRadarConfig, x=x, y=y):
             return True
         if inRangeOfSensor(config=longRangeRadarConfig, x=x, y=y):
-            # print("LRR HIT")
             return True
     return False
 
@@ -150,60 +148,3 @@ def main():
 
 
 main()
-
-
-# cameraConfig = {
-#     "tolerance": 10,
-#     "range": {
-#         "x": {
-#             "start": 0,
-#             "end": 80
-#         },
-#         "y": {
-#             "start": -10,
-#             "end": 10
-#         }
-#     }
-# }
-
-# longRangeRadarConfig = {
-#     "tolerance": 10,
-#     "range": {
-#         "x": {
-#             "start": 0,
-#             "end": 100
-#         },
-#         "y": {
-#             "start": -5,
-#             "end": 5
-#         }
-#     }
-# }
-
-
-# def test():
-
-#     if pointVisibleToCameraAndAnotherSensor(sensorConfigs=[cameraConfig, longRangeRadarConfig, longRangeRadarConfig], xy=[0.00000000000000000000000000, 0.00000000000000000000000]):
-#         print("PASS")
-
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-#     # if pointVisibleToCameraAndAnotherSensor(x=, y=):
-#     #     print("PASS")
-# test()
