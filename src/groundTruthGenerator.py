@@ -84,7 +84,6 @@ def generateValidGroundTruthDataPoint(objId, sensorConfigs, minMaxRangeValues):
             sensorDataSpec["x"] = x
             sensorDataSpec["y"] = y
             return sensorDataSpec
-        # print(x, y)
 
 
 def generateGroundTruthData(sensorConfigs, minMaxRangeValues):

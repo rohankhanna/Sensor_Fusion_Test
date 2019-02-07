@@ -32,18 +32,7 @@ def inRange(item, config):
 
 
 def visibleTo(listOfDicts, config):
-    # index = 0
     copyOfListOfDicts = listOfDicts.copy()
-    # for item in copyOfListOfDicts:
-    #     if not (
-    #         item["x"] <= config["range"]["x"]["end"] and
-    #         item["x"] >= config["range"]["x"]["start"] and
-    #         item["y"] <= config["range"]["y"]["end"] and
-    #         item["y"] >= config["range"]["y"]["start"]
-    #     ):
-    #         del copyOfListOfDicts[index]
-    #     else:
-    #         index = index+1
     returnable = [item for item in copyOfListOfDicts if inRange(
         item=item, config=config)]
     return returnable
@@ -112,8 +101,6 @@ def noised(point, threshold, sensorConfig):
                 y=point["y"] + dy,
                 sensorConfig=sensorConfig)):
             break
-        # else:
-        #     print(sensorConfig, point["x"] + dx, point["y"] + dy)
     point["x"] = point["x"] + dx
     point["y"] = point["y"] + dy
     return point
@@ -178,6 +165,4 @@ def main():
     writeLongRangeRadarData(expectedInputDataLongRangeRadar)
 
 
-print("------")
 main()
-print("------")

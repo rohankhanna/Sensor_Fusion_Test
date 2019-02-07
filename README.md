@@ -1,5 +1,5 @@
-# Sensor_Fusion_Test
-## Generate Test Data as Sensor data input
+# Sensor Fusion Test
+## Generate End to end Expected Output - Given Input Data pairs
 
 This project expects python3 and a linux environment
 
@@ -21,4 +21,18 @@ to work on changes to givenInputGenerator.py, something similar as above exists 
 `cd debugtools/visualization/` 
 `sh runGivenDataGeneratorAndVisualiseData.sh`, allowing you to visualize the output of givenDataGenerator.py
 
+There is also a way to generate a callgraph of the entire python program file by running 
 
+`cd debugTools/visualization`
+`sh callgraphVisualizationGivenInputGenerator.sh`
+or 
+`cd debugTools/visualization`
+`sh callgraphVisualizationGivenInputGenerator.sh`
+
+to visualize the callgraphs of the respective programs, 
+
+To run these, we require chrome or chromium, and for one window of chrome open. 
+we require `chromix-too`, wich consists of a cli tool that can be installed using npm here: [chromix-too](https://github.com/smblott-github/chromix-too)
+and also its [extension](https://chrome.google.com/webstore/detail/chromix-too/ppapdfccnamacakfkpfmpfnefpeajboj)
+
+then we run `chromix-too-server` in another terminal and leave it running for us to take advantage of these callgraphVisualization scripts
