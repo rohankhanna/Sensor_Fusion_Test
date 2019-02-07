@@ -2,17 +2,6 @@ import json
 import matplotlib.pyplot as plt
 import csv
 
-# x = []
-# y = []
-
-# x_ = []
-# y_ = []
-
-# x__ = []
-# y__ = []
-
-# with open("../../dist/expectedOutputData.csv", "r") as stream:
-#     expOutput = csv.load(stream)
 objId = []
 x = []
 y = []
@@ -27,6 +16,7 @@ __objId = []
 __x = []
 __y = []
 __timestamp = []
+
 # with open("../../dist/expectedOutputData.csv") as csvDataFile:
 #     csvReader = csv.reader(csvDataFile)
 #     for row in csvReader:

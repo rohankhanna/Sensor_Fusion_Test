@@ -1,0 +1,1 @@
+ls ../../src/givenInputGenerator.py | entr -r sh runGivenInputGeneratorAndVisualiseData.sh

@@ -1,0 +1,1 @@
+ls ../../src/groundTruthGenerator.py | entr -r sh runGroundTruthGeneratorAndVisualiseData.sh

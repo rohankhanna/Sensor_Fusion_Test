@@ -144,7 +144,6 @@ def main():
     expectedInputDataShortRangeRadar = []
     expectedInputDataLongRangeRadar = []
     for timestamp in range(0, int(groundTruthData[-1]["timestamp"]), 2):
-        # """int(groundTruthData[-1]["timestamp"])"""
         tempGroundTruthStore = getGroundTruthDataAtTimestamp(
             groundTruthData=groundTruthData, timestamp=timestamp)
         # add noise to individual Point readings
